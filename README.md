@@ -2,6 +2,9 @@
 
 Proyek ini bertujuan untuk melatih model deep learning menggunakan dataset MNIST untuk mengenali angka tulisan tangan. Model akan diekspor ke format ONNX untuk integrasi web sederhana yang kita gambar sendiri di canvas dan menampilkan hasil prediksi nya dengan model yang telah dibuat
 
+## Demo
+![Aristektur Model](screenshot/demo.gif)
+
 ## Arsiteksur Model Sederhana
 ![Aristektur Model](screenshot/ss_2.png)
 
@@ -46,7 +49,15 @@ Install requirements.txt dan Training model
 
 ## Build ONNXRuntime-Web 
 
-Soon
+Masuk ke direktori web dan jalankan 
+
+```bash
+    cd model
+    npx serve
+```
+
+atau kalian juga bisa langsung buka index.html di browser kalian
+jangan lupa pindahkan model/output/mnist_model.onnx hasil training ke folder web/model (buat folder seperti ini)
 
 
 
