@@ -106,6 +106,9 @@
         }
 
         async function predict() {
+            // Memulai mengukur waktu eksekusi
+            const startTime = performance.now();
+
             // resize canvas sesuai input model (28x28)
             const resizedImage = resizeCanvas(canvas, 28, 28);
             // ambil image data
@@ -125,6 +128,11 @@
             // mencari probabilitas angka tertinggi sesuai output model
             const digit = prediction.indexOf(Math.max(...prediction));
             document.getElementById('result').innerText = `Prediksi Gambar Canvas : ${digit}`;
+
+            // Menghentikan pengukuran waktu eksekusi dan mencetak durasi
+            const endTime = performance.now();
+            const duration = endTime - startTime;
+            console.log(`Waktu eksekusi prediksi: ${duration} ms`);
         }
 
         // Resize canvas
