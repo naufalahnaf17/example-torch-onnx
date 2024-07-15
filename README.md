@@ -3,8 +3,6 @@
 Proyek ini bertujuan untuk melatih model deep learning menggunakan dataset MNIST untuk mengenali angka tulisan tangan. Model akan diekspor ke format ONNX untuk integrasi web sederhana yang kita gambar sendiri di canvas dan menampilkan hasil prediksi nya dengan model yang telah dibuat
 
 
-
-
 ## Build Model
 
 Clone project
@@ -41,6 +39,8 @@ Install requirements.txt dan Training model
 
 ### Akurasi Training
 98% Akurasi
+
+![Akurasi Model](screenshot/ss_1.png)
 
 ## Build ONNXRuntime-Web 
 
