@@ -1,1 +1,155 @@
-<h1>online</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pytorch ONNXRuntime-WEB</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        canvas {
+            border: 1px solid #000000;
+            background-color: #000000;
+            display: block;
+            margin: 0 auto;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Demo Model dengan ONNXRuntime-Web Secara Realtime</h1>
+        <h3>Gambar angka 0 - 9 dan lihat prediksinya secara realtime dengan model yang telah dibuat menggunakan pytorch</h3>
+        <canvas id="canvas" width="280" height="280"></canvas>
+        <button onclick="clearCanvas()">Clear</button>
+        <h1 id="result">Prediksi Gambar Canvas : </h1>
+    </div>
+
+    <!-- Import onnxruntime-web -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+
+    <script>
+        // setup canvas untuk menggambar
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.lineWidth = 10;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'white';
+
+        let drawing = false;
+
+        // setup trigger event
+        canvas.addEventListener('mousedown', () => drawing = true);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('touchstart', () => drawing = true);
+        canvas.addEventListener('touchend', stopDrawing);
+        canvas.addEventListener('touchmove', draw);
+
+        function draw(event) {
+            if (!drawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = (event.clientX || event.touches[0].clientX) - rect.left;
+            const y = (event.clientY || event.touches[0].clientY) - rect.top;
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        function stopDrawing() {
+            drawing = false;
+            ctx.beginPath();
+            predict();
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            document.getElementById('result').innerText = '';
+        }
+
+        async function predict() {
+            // resize canvas sesuai input model (28x28)
+            const resizedImage = resizeCanvas(canvas, 28, 28);
+            // ambil image data
+            const imageData = resizedImage.getContext('2d').getImageData(0, 0, 28, 28);
+            // preprocess image sebelum dimasukan kedalam model
+            const input = preprocess(imageData);
+
+            // load model yang telah kita buat, pindahkan dari folder model/output
+            const session = await ort.InferenceSession.create('./model/mnist_model.onnx');
+            const tensor = new ort.Tensor('float32', input, [1, 1, 28, 28]);
+
+            // jalankan session dari onnxruntime
+            const output = await session.run({ input: tensor });
+            // melakukan prediksi
+            const prediction = output.output.data;
+
+            // mencari probabilitas angka tertinggi sesuai output model
+            const digit = prediction.indexOf(Math.max(...prediction));
+            document.getElementById('result').innerText = `Prediksi Gambar Canvas : ${digit}`;
+        }
+
+        // Resize canvas
+        function resizeCanvas(canvas, width, height) {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(canvas, 0, 0, width, height);
+            return tempCanvas;
+        }
+
+        // Preprocess Gambar
+        function preprocess(imageData) {
+            // Normalisasi data dan ubah imageData menjadi grayscale (abu abu)
+            const { data, width, height } = imageData;
+            const input = new Float32Array(width * height);
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                input[i / 4] = (r + g + b) / 3 / 255;
+            }
+            return input;
+        }
+    </script>
+</body>
+</html>
