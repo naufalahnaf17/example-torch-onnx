@@ -2,8 +2,10 @@
 
 Proyek ini bertujuan untuk melatih model deep learning menggunakan dataset MNIST untuk mengenali angka tulisan tangan. Model akan diekspor ke format ONNX untuk integrasi web sederhana yang kita gambar sendiri di canvas dan menampilkan hasil prediksi nya dengan model yang telah dibuat
 
-## Demo
+## Demo Project
 ![Aristektur Model](screenshot/demo.gif)
+
+Pada demo diatas kita bisa melihat saat kita menggambar di canvas langsung menampilkan hasil prediksi berdasarkan model yang telah kita latih
 
 ## Arsiteksur Model Sederhana
 ![Aristektur Model](screenshot/ss_2.png)
