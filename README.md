@@ -54,7 +54,7 @@ Install requirements.txt dan Training model
 Masuk ke direktori web dan jalankan 
 
 ```bash
-    cd model
+    cd web
     npx serve
 ```
 
